@@ -284,7 +284,8 @@ class EffectManager():
         float intensity = texture(screenTexture, renorm_tex).r;
 
         if(intensity<=0.0){
-            discard;
+            fragOutput0 = vec4(vec3(1.0), 1.0);
+            //discard;
         }else{
             vec4 final_color = color_mapping(intensity, colormapTexture);
             fragOutput0 = vec4(final_color.rgb, u_opacity*final_color.a);

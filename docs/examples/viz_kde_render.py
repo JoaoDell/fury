@@ -13,6 +13,7 @@ import numpy as np
 
 from fury.actors.effect_manager import EffectManager
 from fury.window import Scene, ShowManager, record
+from fury.actor import markers
 
 #####################################################################################
 # This function below will help us to relocate the points for a better visualization,
@@ -103,6 +104,11 @@ effects = EffectManager(manager)
 kde_actor = effects.kde(points, sigmas, kernel="gaussian", colormap="inferno")
 
 manager.scene.add(kde_actor)
+
+
+markers_actor = markers(points, scales = 0.1)
+
+manager.scene.add(markers_actor)
 
 interactive = True
 

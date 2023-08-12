@@ -32,72 +32,23 @@ categories_file, edges_file, positions_file = sorted(files.keys())
 # We read our datasets
 
 positions = np.loadtxt(pjoin(folder, positions_file))
-categories = np.loadtxt(pjoin(folder, categories_file), dtype=str)
-edges = np.loadtxt(pjoin(folder, edges_file), dtype=int)
 
-###############################################################################
-# We attribute a color to each category of our dataset which correspond to our
-# nodes colors.
 
-category2index = {category: i for i, category in enumerate(np.unique(categories))}
+slice = 3000
 
-index2category = np.unique(categories)
-
-categoryColors = cmap.distinguishable_colormap(nb_colors=len(index2category))
-
-colors = np.array([categoryColors[category2index[category]] for category in categories])
-
-###############################################################################
-# We define our node size
+positions = positions[:slice]
+cm = np.average(positions, axis = 0)
+print(positions.shape)
+print(cm)
 
 radii = 1 + np.random.rand(len(positions))
 
-###############################################################################
-# Lets create our edges now. They will indicate a citation between two nodes.
-# OF course, the colors of each edges will be an interpolation between the two
-# node that it connects.
 
-edgesPositions = []
-edgesColors = []
-for source, target in edges:
-    edgesPositions.append(np.array([positions[source], positions[target]]))
-    edgesColors.append(np.array([colors[source], colors[target]]))
 
-edgesPositions = np.array(edgesPositions)
-edgesColors = np.average(np.array(edgesColors), axis=1)
-
-###############################################################################
-# Our data preparation is ready, it is time to visualize them all. We start to
-# build 2 actors that we represent our data : sphere_actor for the nodes and
-# lines_actor for the edges.
-
-sphere_actor = actor.sphere(
-    centers=positions,
-    colors=colors,
-    radii=radii * 0.5,
-    theta=8,
-    phi=8,
-)
-
-lines_actor = actor.line(
-    edgesPositions,
-    colors=edgesColors,
-    opacity=0.1,
-)
-
-###############################################################################
-# All actors need to be added in a scene, so we build one and add our
-# lines_actor and sphere_actor.
 
 scene = window.Scene()
 
-scene.add(lines_actor)
-scene.add(sphere_actor)
-
-###############################################################################
-# The final step ! Visualize and save the result of our creation! Please,
-# switch interactive variable to True if you want to visualize it.
-
+scene.set_camera((-500, -500, -500), cm, (0.0, 0.0, 1.0))
 
 
 width, height = (600, 600)
@@ -110,10 +61,9 @@ manager = window.ShowManager(
 manager.initialize()
 
 em = EffectManager(manager)
-kde_actor = em.kde(positions, [10.0], "exponential", colormap = "inferno")
+kde_actor = em.kde(positions, [40.0], "exponential", colormap = "inferno")
 
 manager.scene.add(kde_actor)
-
 
 interactive = True
 
@@ -121,7 +71,3 @@ if interactive:
     manager.start()
 
 window.record(scene, out_path='journal_networks.png', size=(600, 600))
-
-###############################################################################
-# This example can be improved by adding some interactivy with slider,
-# picking, etc. Play with it, improve it!

@@ -45,14 +45,16 @@ def normalize(array : np.array, min : float = 0.0, max : float = 1.0, axis : int
 ##################################################################
 # First, we need to setup the screen we will render the points to.
 
-width, height = (1200, 1000)
+width, height = (1200, 800) # For some reason, this keeps the scaling conserved, 
+# but 1200 by 1000 not. Problem related to scaling. Threshold for changes to be
+# visible in this example is 850 
 
 scene = Scene()
-scene.set_camera(position=(-24, 20, -40),
-                 focal_point=(0.0,
-                              0.0,
-                              0.0),
-                 view_up=(0.0, 0.0, 1.0))
+# scene.set_camera(position=(-24, 20, -40),
+#                  focal_point=(0.0,
+#                               0.0,
+#                               0.0),
+#                  view_up=(0.0, 0.0, 1.0))
 
 manager = ShowManager(
     scene,

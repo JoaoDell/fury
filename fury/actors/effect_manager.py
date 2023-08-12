@@ -80,7 +80,7 @@ def window_to_texture(
                 "rgba" : windowToImageFilter.SetInputBufferTypeToRGBA,
                 "zbuffer" : windowToImageFilter.SetInputBufferTypeToZBuffer}
     type_dic[d_type.lower()]()
-    windowToImageFilter.Update()
+    # windowToImageFilter.Update()
 
     texture = Texture()
     texture.SetMipmap(True)
@@ -280,8 +280,9 @@ class EffectManager():
         tex_impl = """
         // Turning screen coordinates to texture coordinates
         vec2 res_factor = vec2(res.y/res.x, 1.0);
-        vec2 renorm_tex = res_factor*normalizedVertexMCVSOutput.xy*0.5 + 0.5;
-        float intensity = texture(screenTexture, renorm_tex).r;
+        vec2 renorm_tex = normalizedVertexMCVSOutput.xy*0.5 + 0.5;
+        vec2 tex_2 = gl_FragCoord.xy/res;
+        float intensity = texture(screenTexture, tex_2).r;
 
         if(intensity<=0.0){
             fragOutput0 = vec4(vec3(1.0), 1.0);
@@ -336,7 +337,7 @@ class EffectManager():
                            actor_scales.max(),
                            0.0]])
 
-        res = self.off_manager.size
+        res = self.on_manager.size
 
         # Render to second billboard for color map post-processing.
         textured_billboard = billboard(

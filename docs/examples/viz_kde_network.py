@@ -33,12 +33,14 @@ categories_file, edges_file, positions_file = sorted(files.keys())
 
 positions = np.loadtxt(pjoin(folder, positions_file))
 
+print(type(positions))
 
-slice = 3000
+slice = 1000
 
 positions = positions[:slice]
 cm = np.average(positions, axis = 0)
 print(positions.shape)
+print(positions)
 print(cm)
 
 radii = 1 + np.random.rand(len(positions))
@@ -48,10 +50,10 @@ radii = 1 + np.random.rand(len(positions))
 
 scene = window.Scene()
 
-scene.set_camera((-500, -500, -500), cm, (0.0, 0.0, 1.0))
+# scene.set_camera((-500, -500, -500), cm, (0.0, 0.0, 1.0))
 
 
-width, height = (600, 600)
+width, height = (1200, 1000)
 manager = window.ShowManager(
     scene,
     "demo",
@@ -61,9 +63,13 @@ manager = window.ShowManager(
 manager.initialize()
 
 em = EffectManager(manager)
-kde_actor = em.kde(positions, [40.0], "exponential", colormap = "inferno")
+kde_actor = em.kde(positions, 5.0, "gaussian", colormap = "inferno")
 
 manager.scene.add(kde_actor)
+
+markers_actor = actor.markers(positions, scales = 3.0)
+
+manager.scene.add(markers_actor)
 
 interactive = True
 

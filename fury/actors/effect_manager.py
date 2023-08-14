@@ -242,9 +242,11 @@ class EffectManager():
         textured_billboard : actor.Actor
             KDE rendering actor."""
         if not isinstance(sigmas, np.ndarray):
-            sigmas = np.array(sigmas)
+            sigmas = np.array([sigmas])
         if sigmas.shape[0] != 1 and sigmas.shape[0] != points.shape[0]:
             raise IndexError("sigmas size must be one or points size.")
+        elif sigmas.shape[0] == 1:
+            sigmas = np.repeat(sigmas[0], points.shape[0])
         if np.min(sigmas) <= 0:
             raise ValueError("sigmas can't have zero or negative values.")
 
@@ -280,13 +282,13 @@ class EffectManager():
         tex_impl = """
         // Turning screen coordinates to texture coordinates
         vec2 res_factor = vec2(res.y/res.x, 1.0);
-        vec2 renorm_tex = normalizedVertexMCVSOutput.xy*0.5 + 0.5;
+        vec2 renorm_tex = res_factor*normalizedVertexMCVSOutput.xy*0.5 + 0.5;
         vec2 tex_2 = gl_FragCoord.xy/res;
         float intensity = texture(screenTexture, tex_2).r;
 
         if(intensity<=0.0){
-            fragOutput0 = vec4(vec3(1.0), 1.0);
-            //discard;
+            //fragOutput0 = vec4(vec3(1.0), 1.0);
+            discard;
         }else{
             vec4 final_color = color_mapping(intensity, colormapTexture);
             fragOutput0 = vec4(final_color.rgb, u_opacity*final_color.a);
@@ -337,7 +339,7 @@ class EffectManager():
                            actor_scales.max(),
                            0.0]])
 
-        res = self.on_manager.size
+        res = np.array(self.on_manager.size)
 
         # Render to second billboard for color map post-processing.
         textured_billboard = billboard(
@@ -360,6 +362,9 @@ class EffectManager():
 
         def kde_callback(obj=None, event=None):
             cam_params = self.on_manager.scene.get_camera()
+            res[0], res[1]= self.on_manager.window.GetSize()
+            self.off_manager.window.SetSize(res[0], res[1])
+            shader_custom_uniforms(textured_billboard, "fragment").SetUniform2f("res", res)
             self.off_manager.scene.set_camera(*cam_params)
             self.off_manager.scene.Modified()
             shader_apply_effects(window, bill, gl_disable_depth)

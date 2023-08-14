@@ -45,7 +45,7 @@ def normalize(array : np.array, min : float = 0.0, max : float = 1.0, axis : int
 ##################################################################
 # First, we need to setup the screen we will render the points to.
 
-width, height = (1200, 800) # For some reason, this keeps the scaling conserved, 
+width, height = (1200, 1000) # For some reason, this keeps the scaling conserved, 
 # but 1200 by 1000 not. Problem related to scaling. Threshold for changes to be
 # visible in this example is 850 
 
@@ -72,8 +72,8 @@ manager.initialize()
 
 n_points = 1000
 points = np.random.rand(n_points, 3)
-points = normalize(points, -5, 5)
-offset = np.array([0.0, 0.0, 0.0])
+points = normalize(points, -500, 500)
+offset = np.array([-16.7091521,  -14.52150358,  25.61470745])
 points = points + np.tile(offset, points.shape[0]).reshape(points.shape)
 
 ###################################################################
@@ -81,7 +81,7 @@ points = points + np.tile(offset, points.shape[0]).reshape(points.shape)
 # generated with ``numpy.random.rand`` as well, which are also 
 # remapped to the range of ``[0.05, 0.2]``.
 
-sigmas = normalize(np.random.rand(n_points, 1), 0.05, 0.2)
+sigmas = normalize(np.random.rand(n_points, 1), 3, 10)
 
 
 ###################################################################
@@ -107,8 +107,7 @@ kde_actor = effects.kde(points, sigmas, kernel="gaussian", colormap="inferno")
 
 manager.scene.add(kde_actor)
 
-
-markers_actor = markers(points, scales = 0.1)
+markers_actor = markers(points, scales = 3.0)
 
 manager.scene.add(markers_actor)
 
